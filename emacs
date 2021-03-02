@@ -19,11 +19,20 @@
 ;;;     ¶ Zoom out: 'C+x n w'
 ;;;     ¶ NeoTree:
 ;;; 	¶ C-c C-n Create a file or create a directory if filename ends with a ‘/’;
-;;; 	¶ C-c C-d Delete a file or a directory.
-;;;		¶ C-c C-r Rename a file or a directory.
-;;; 	¶ C-c C-p Copy a file or a directory.
-;;;		¶ C-x h	Select entire buffer.
+;;; 	¶ C-c C-d Delete a file or a directory;
+;;;		¶ C-c C-r Rename a file or a directory;
+;;; 	¶ C-c C-p Copy a file or a directory;
+;;;     ¶ Others:
+;;;		¶ C-x h	Select entire buffer;
+;;;     ¶ C-x r m Bookmark a file;
+;;;     ¶ C-x r l Load bookmarks list;
+;;;     ¶ M-x bookmark-delete;
+;;; --------------------------------------------------------------------------------------
+;;; Hack font family repository: https://github.com/source-foundry/Hack;
+;;; Yosemite San Francisco Font: https://github.com/supermarin/YosemiteSanFranciscoFont
 ;;;
+;;;     The execution of M-x all-the-icons-install-fonts is necessary to install the fonts used
+;;; by the package all-the-icons.
 ;;; --------------------------------------------------------------------------------------
 ;;; 'byte-compile-file' this file
 ;;; --------------------------------------------------------------------------------------
@@ -33,10 +42,10 @@
 ;;; Code:
 
 ;; These lines should be first, so Emacs doesn't blink nor does it resize its window on startup:
-(setq initial-frame-alist '((width . 105)))				; Window size;
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))	; hide scroll bar;
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))		; hide menu bar;
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))		; hide toolbar;
+(setq initial-frame-alist '((width . 105)(height . 55))) ; Window size;
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))	 ; hide scroll bar;
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))		 ; hide menu bar;
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))		 ; hide toolbar;
 (setq inhibit-startup-screen t)
 (set-face-attribute 'default nil
 					:family "Hack" :height 85
@@ -49,11 +58,10 @@
 (add-to-list 'package-archives
              '("marmalade" . "https://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives
-             '("melpa" . "https://melpa.milkbox.net/packages/"))
+             '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
                                         ; -=[ Packages declarations:
-
 (require 'dashboard)
 (require 'helm)
 (require 'powerline)
@@ -66,6 +74,7 @@
 (require 'auto-complete-config)
 (require 'fill-column-indicator)
 (require 'cc-mode)
+(require 'use-package)
 
                                        ; -= [ General packages configurations:
 
@@ -75,10 +84,14 @@
 (setq dashboard-set-heading-icons t)	;show icons on head titles
 (setq dashboard-set-file-icons t)
 (setq dashboard-show-shortcuts nil)		;hide shortcut indicators
-(setq dashboard-startup-banner '2)		;'official, 'logo, '1, '2, '3
+(setq dashboard-startup-banner "~/dashboard_logo.txt")		;'official, 'logo, '1, '2, '3
 (setq dashboard-items '((recents . 5)
 						(bookmarks . 5)
-						(agenda . 5)))
+						(agenda . 10)))
+(setq dashboard-week-agenda t)
+
+;; Org-Agenda:
+(setq org-agenda-files '("~/Documentos/org/"))
 
 ;; Helm:
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
@@ -115,7 +128,7 @@
 
 ;; Actual theme:
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-(load-theme 'monokai t)
+(load-theme 'wombat t)
 
 ;; Auto-complete:
 (ac-config-default)
@@ -228,7 +241,7 @@
 ;; Multi-state workflows for Org mode:
 (setq org-todo-keywords
       '((sequence "TODO(t)" "|" "DONE(d)")
-        (sequence "FIXME(f)" "BUG(b)" "|" "FIXED(x)")))
+        (sequence "DOING(g)" "|" "FIXME(f)" "BUG(b)" "|" "FIXED(x)")))
 
 ;; Enable select with 'Shift':
 (setq org-support-shift-select t)
@@ -277,3 +290,29 @@
 
 (provide '.emacs)
 ;;; .emacs ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+	("e6cdd07a8475458edf8dfd8b5cb3d81c6bb9aa0cb8535322c21d2e242dd044ed" "3f7b4c736ffe0a373b06ce3d97c26b9e559bbc4f9b2e50e4b53143f0b0d7eb2c" default)))
+ '(package-selected-packages
+   (quote
+	(dashboard-hackernews neotree move-text hlinum highline helm fill-column-indicator dashboard dash autopair auto-complete all-the-icons airline-themes))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(dashboard-heading ((t (:foreground "#E7DB74" :weight bold))))
+ '(dashboard-text-banner ((t (:foreground "#66D9EF" :weight bold))))
+ '(highline-face ((t (:background "gray20"))))
+ '(linum-highlight-face ((t (:inherit default :foreground "#66D9EF"))))
+ '(minibuffer-prompt ((t (:background "gray20" :foreground "#E7DB74"))))
+ '(org-level-1 ((t (:foreground "#E7DB74" :weight normal :height 85 :family "Hack"))))
+ '(org-level-2 ((t (:foreground "#67D8EF" :weight normal :height 85 :family "Hack"))))
+ '(org-level-3 ((t (:foreground "#A6E22C" :weight normal :height 85 :family "Hack"))))
+ '(org-level-4 ((t (:foreground "#F92472" :weight normal :height 85 :family "Hack"))))
+ '(show-paren-match ((t (:background "#66D9EF" :foreground "transparent" :weight bold)))))
